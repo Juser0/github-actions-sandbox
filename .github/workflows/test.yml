@@ -68,9 +68,9 @@ jobs:
       - name: Save Docker image as tar (if Dockerfile case)
         if: matrix.case != 'bootBuildImage'
         run: |
-            echo "VALID_CASE_NAME=$valid_case_name" >> $GITHUB_ENV
+            echo "VALID_CASE_NAME=${{ matrix.case }}-${{ env.count }}" | sed 's/:/_/g' >> $GITHUB_ENV
             cd military-recruit
-            docker save dockerfile:${{ env.count }} -o "$VALID_CASE_NAME.tar"
+            docker save dockerfile:${{ env.count }} -o ${{ env.VALID_CASE_NAME }}.tar
 
       - name: Upload Docker image artifact (if Dockerfile case)
         if: matrix.case != 'bootBuildImage'
@@ -97,4 +97,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: bootBuildImage-${{ env.count }}
-          path: ./military-recruit/bootBuildImage-${{ env.count }}.tar
+          path: ./military-recruit/bootBuildImage.tar
