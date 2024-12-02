@@ -1,20 +1,25 @@
 # This is a basic workflow to help you get started with Actions
 
-name: custom action test
+name: JDK JRE Benchmark
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-  build:
+  benchmark:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        java-version: [8, 11, 17, 21]
+        mode: [jdk, jre]
+
     steps:
-      - name: checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 
-      
-      - name: use custom action
-        uses: Juser0/version-labeling@v1.0.0
+    - name: Set up Java ${{ matrix.java-version }}
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ matrix.java-version }}
+        java-package: ${{ matrix.mode }}
