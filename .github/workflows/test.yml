@@ -17,7 +17,7 @@ jobs:
         case:
           - dockerfile-openjdk:17-jdk
           - dockerfile-openjdk:17-jdk-slim
-          - dockerfile-temurin:17-jre-alpine
+          - dockerfile-eclipse-temurin:17-jre-alpine
           - bootBuildImage
 
     steps:
