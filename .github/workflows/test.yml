@@ -31,6 +31,13 @@ jobs:
           cd military-recruit
           echo "count=$(git rev-list --all --count)" >> $GITHUB_ENV
 
+      - name: Set up JRE 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+          java-package: jre
+
       - name: Grant execute permission for gradlew
         run: |
           cd military-recruit
@@ -69,14 +76,6 @@ jobs:
         with:
           name: ${{ matrix.case }}-${{ env.count }}
           path: ${{ matrix.case }}-${{ env.count }}.tar
-
-      - name: Set up JRE 17 (if bootBuildImage case)
-        if: matrix.case == 'bootBuildImage'
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: 17
-          java-package: jre
 
       - name: Build bootBuildImage
         if: matrix.case == 'bootBuildImage'
