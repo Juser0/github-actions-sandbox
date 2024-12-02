@@ -82,13 +82,13 @@ jobs:
         if: matrix.case == 'bootBuildImage'
         run: |
           cd military-recruit
-          ./gradlew bootBuildImage --imageName=bootBuildImage:${{ env.count }} --createdDate=now
+          ./gradlew bootBuildImage --imageName=bootbuildimage:${{ env.count }} --createdDate=now
 
       - name: Save bootBuildImage as tar
         if: matrix.case == 'bootBuildImage'
         run: |
           cd military-recruit
-          docker save bootBuildImage:${{ env.count }} -o bootBuildImage-${{ env.count }}.tar
+          docker save bootbuildimage:${{ env.count }} -o bootbuildimage-${{ env.count }}.tar
 
       - name: Upload bootBuildImage artifact
         if: matrix.case == 'bootBuildImage'
