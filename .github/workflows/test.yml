@@ -75,7 +75,7 @@ jobs:
         if: matrix.case != 'bootBuildImage'
         uses: actions/upload-artifact@v3
         with:
-          name: /military-recruit/${{ matrix.case }}-${{ env.count }}
+          name: ${{ matrix.case }}-${{ env.count }}
           path: /military-recruit/${{ matrix.case }}-${{ env.count }}.tar
 
       - name: Build bootBuildImage
@@ -94,5 +94,5 @@ jobs:
         if: matrix.case == 'bootBuildImage'
         uses: actions/upload-artifact@v3
         with:
-          name: /military-recruit/bootBuildImage-${{ env.count }}
+          name: bootBuildImage-${{ env.count }}
           path: /military-recruit/bootBuildImage-${{ env.count }}.tar
