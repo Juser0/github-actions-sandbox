@@ -23,21 +23,29 @@ jobs:
 
     steps:
       - name: Checkout code
-        run: git clone https://github.com/Juser0/military-recruit.git
+        run: |
+          git clone https://github.com/Juser0/military-recruit.git
 
       - name: Get commit count
-        run: echo "count=$(git rev-list --all --count)" >> $GITHUB_ENV
+        run: |
+          cd military-recruit
+          echo "count=$(git rev-list --all --count)" >> $GITHUB_ENV
 
       - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+        run: |
+          cd military-recruit
+          chmod +x gradlew
 
       - name: Build application (if Dockerfile case)
         if: matrix.case != 'bootBuildImage'
-        run: ./gradlew build -x test
+        run: |
+          cd military-recruit
+          ./gradlew build -x test
 
       - name: Generate Dockerfile (if Dockerfile case)
         if: matrix.case != 'bootBuildImage'
         run: |
+          cd military-recruit
           echo "FROM ${matrix.case#dockerfile-}" > Dockerfile
           echo "COPY build/libs/*.jar /app/app.jar" >> Dockerfile
           echo "WORKDIR /app" >> Dockerfile
@@ -45,11 +53,15 @@ jobs:
 
       - name: Build Docker image (if Dockerfile case)
         if: matrix.case != 'bootBuildImage'
-        run: docker build -t ${{ matrix.case }}:${{ env.count }} .
+        run: |
+          cd military-recruit
+          docker build -t ${{ matrix.case }}:${{ env.count }} .
 
       - name: Save Docker image as tar (if Dockerfile case)
         if: matrix.case != 'bootBuildImage'
-        run: docker save ${{ matrix.case }}:${{ env.count }} -o ${{ matrix.case }}-${{ env.count }}.tar
+        run: |
+          cd military-recruit
+          docker save ${{ matrix.case }}:${{ env.count }} -o ${{ matrix.case }}-${{ env.count }}.tar
 
       - name: Upload Docker image artifact (if Dockerfile case)
         if: matrix.case != 'bootBuildImage'
@@ -68,11 +80,15 @@ jobs:
 
       - name: Build bootBuildImage
         if: matrix.case == 'bootBuildImage'
-        run: ./gradlew bootBuildImage --imageName=bootBuildImage:${{ env.count }} --createdDate=now
+        run: |
+          cd military-recruit
+          ./gradlew bootBuildImage --imageName=bootBuildImage:${{ env.count }} --createdDate=now
 
       - name: Save bootBuildImage as tar
         if: matrix.case == 'bootBuildImage'
-        run: docker save bootBuildImage:${{ env.count }} -o bootBuildImage-${{ env.count }}.tar
+        run: |
+          cd military-recruit
+          docker save bootBuildImage:${{ env.count }} -o bootBuildImage-${{ env.count }}.tar
 
       - name: Upload bootBuildImage artifact
         if: matrix.case == 'bootBuildImage'
