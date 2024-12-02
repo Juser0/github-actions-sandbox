@@ -53,7 +53,9 @@ jobs:
         if: matrix.case != 'bootBuildImage'
         run: |
           cd military-recruit
-          echo "FROM ${matrix.case#dockerfile-}" > Dockerfile
+          case="${{ matrix.case }}"
+          dockerfile_base="${case#dockerfile-}"
+          echo "FROM $dockerfile_base" > Dockerfile
           echo "COPY build/libs/*.jar /app/app.jar" >> Dockerfile
           echo "WORKDIR /app" >> Dockerfile
           echo "CMD [\"java\", \"-jar\", \"app.jar\"]" >> Dockerfile
