@@ -15,10 +15,10 @@ jobs:
     strategy:
       matrix:
         case:
-          - dockerfile-openjdk-17-jdk
-          - dockerfile-openjdk-17-jdk-slim
-          - dockerfile-openjdk-17-jre
-          - dockerfile-temurin-17-jre-alpine
+          - dockerfile-openjdk:17-jdk
+          - dockerfile-openjdk:17-jdk-slim
+          - dockerfile-openjdk:17-jre
+          - dockerfile-temurin:17-jre-alpine
           - bootBuildImage
 
     steps:
