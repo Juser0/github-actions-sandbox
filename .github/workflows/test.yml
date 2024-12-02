@@ -70,13 +70,14 @@ jobs:
         run: |
           cd military-recruit
           docker save dockerfile:${{ env.count }} -o ${{ matrix.case }}-${{ env.count }}.tar
+          ls -al
 
       - name: Upload Docker image artifact (if Dockerfile case)
         if: matrix.case != 'bootBuildImage'
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.case }}-${{ env.count }}
-          path: /military-recruit/${{ matrix.case }}-${{ env.count }}.tar
+          path: ./military-recruit/${{ matrix.case }}-${{ env.count }}.tar
 
       - name: Build bootBuildImage
         if: matrix.case == 'bootBuildImage'
@@ -89,10 +90,11 @@ jobs:
         run: |
           cd military-recruit
           docker save bootbuildimage:${{ env.count }} -o bootbuildimage-${{ env.count }}.tar
+          ls -al
 
       - name: Upload bootBuildImage artifact
         if: matrix.case == 'bootBuildImage'
         uses: actions/upload-artifact@v3
         with:
           name: bootBuildImage-${{ env.count }}
-          path: /military-recruit/bootBuildImage-${{ env.count }}.tar
+          path: ./military-recruit/bootBuildImage-${{ env.count }}.tar
