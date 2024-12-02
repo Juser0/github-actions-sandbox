@@ -64,13 +64,13 @@ jobs:
         if: matrix.case != 'bootBuildImage'
         run: |
           cd military-recruit
-          docker build -t ${{ matrix.case }}:${{ env.count }} .
+          docker build -t dockerfile:${{ env.count }} .
 
       - name: Save Docker image as tar (if Dockerfile case)
         if: matrix.case != 'bootBuildImage'
         run: |
           cd military-recruit
-          docker save ${{ matrix.case }}:${{ env.count }} -o ${{ matrix.case }}-${{ env.count }}.tar
+          docker save dockerfile:${{ env.count }} -o ${{ matrix.case }}-${{ env.count }}.tar
 
       - name: Upload Docker image artifact (if Dockerfile case)
         if: matrix.case != 'bootBuildImage'
