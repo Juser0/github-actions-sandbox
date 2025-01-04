@@ -59,20 +59,17 @@ jobs:
           echo "COPY build/libs/*.jar /app/app.jar" >> Dockerfile
           echo "WORKDIR /app" >> Dockerfile
           echo "CMD [\"java\", \"-jar\", \"app.jar\"]" >> Dockerfile
+          FILTERED_NAME="/${{ matrix.case##*/ }}"
+          echo "FILTERED_NAME=$FILTERED_NAME" >> $GITHUB_ENV
 
-      - name: Build Docker image (if Dockerfile case)
+      - name: Build Docker image and save tar
         run: |
           cd military-recruit
           docker build -t dockerfile:${{ env.count }} .
+          docker save dockerfile:${{ env.count }} -o dockerfiles.tar
 
-      - name: Save Docker image as tar (if Dockerfile case)
-        run: |
-            echo "VALID_CASE_NAME=${{ matrix.case }}-${{ env.count }}" | sed 's/:/_/g' >> $GITHUB_ENV
-            cd military-recruit
-            docker save dockerfile:${{ env.count }} -o dockerfiles.tar
-
-      - name: Upload Docker image artifact (if Dockerfile case)
+      - name: Upload Docker image artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.VALID_CASE_NAME }}
+          name: ${{ env.FILTERED_NAME }}
           path: ./military-recruit/dockerfiles.tar
