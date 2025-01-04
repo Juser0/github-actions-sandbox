@@ -44,13 +44,13 @@ jobs:
           cd military-recruit
           chmod +x gradlew
 
-      - name: Build application (if Dockerfile case)
+      - name: Build application
         if: matrix.case != 'bootBuildImage'
         run: |
           cd military-recruit
           ./gradlew build -x test
 
-      - name: Generate Dockerfile (if Dockerfile case)
+      - name: Generate Dockerfile
         run: |
           cd military-recruit
           case="${{ matrix.case }}"
@@ -59,7 +59,8 @@ jobs:
           echo "WORKDIR /app" >> Dockerfile
           echo "CMD [\"java\", \"-jar\", \"app.jar\"]" >> Dockerfile
           
-          FILTERED_NAME="/${case##*/}"
+          FILTERED_NAME="${case//\//-}"
+          FILTERED_NAME="${FILTERED_NAME//:/-}"
           echo "FILTERED_NAME=$FILTERED_NAME" >> $GITHUB_ENV
 
       - name: Build Docker image and save tar
