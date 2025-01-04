@@ -15,10 +15,19 @@ jobs:
     strategy:
       matrix:
         case:
-          - dockerfile-openjdk:17-jdk
-          - dockerfile-openjdk:17-jdk-slim
-          - dockerfile-eclipse-temurin:17-jre-alpine
-          - bootBuildImage
+          - openjdk:17
+          - openjdk:17-jdk-slim
+          - openjdk:17-jdk-alpine
+          - eclipse-temurin:17
+          - eclipse-temurin:17-jdk-alpine
+          - eclipse-temurin:17-jre
+          - eclipse-temurin:17-jre-alpine
+          - amazoncorretto:17
+          - amazoncorretto:17-alpine
+          - bellsoft/liberica-openjdk-debian:17
+          - bellsoft/liberica-openjre-debian:17
+          - bellsoft/liberica-openjdk-alpine:17
+          - bellsoft/liberica-openjre-alpine:17
 
     steps:
       - name: Checkout code
@@ -46,48 +55,24 @@ jobs:
         run: |
           cd military-recruit
           case="${{ matrix.case }}"
-          dockerfile_base="${case#dockerfile-}"
-          echo "FROM $dockerfile_base" > Dockerfile
+          echo "FROM $case" > Dockerfile
           echo "COPY build/libs/*.jar /app/app.jar" >> Dockerfile
           echo "WORKDIR /app" >> Dockerfile
           echo "CMD [\"java\", \"-jar\", \"app.jar\"]" >> Dockerfile
 
       - name: Build Docker image (if Dockerfile case)
-        if: matrix.case != 'bootBuildImage'
         run: |
           cd military-recruit
           docker build -t dockerfile:${{ env.count }} .
 
       - name: Save Docker image as tar (if Dockerfile case)
-        if: matrix.case != 'bootBuildImage'
         run: |
             echo "VALID_CASE_NAME=${{ matrix.case }}-${{ env.count }}" | sed 's/:/_/g' >> $GITHUB_ENV
             cd military-recruit
             docker save dockerfile:${{ env.count }} -o dockerfiles.tar
 
       - name: Upload Docker image artifact (if Dockerfile case)
-        if: matrix.case != 'bootBuildImage'
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.VALID_CASE_NAME }}
           path: ./military-recruit/dockerfiles.tar
-
-      - name: Build bootBuildImage
-        if: matrix.case == 'bootBuildImage'
-        run: |
-          cd military-recruit
-          ./gradlew bootBuildImage --imageName=bootbuildimage:${{ env.count }} --createdDate=now
-
-      - name: Save bootBuildImage as tar
-        if: matrix.case == 'bootBuildImage'
-        run: |
-          cd military-recruit
-          docker save bootbuildimage:${{ env.count }} -o bootbuildimage.tar
-          ls -al
-
-      - name: Upload bootBuildImage artifact
-        if: matrix.case == 'bootBuildImage'
-        uses: actions/upload-artifact@v3
-        with:
-          name: bootBuildImage-${{ env.count }}
-          path: ./military-recruit/bootbuildimage.tar
