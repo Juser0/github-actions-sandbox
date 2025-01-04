@@ -51,7 +51,6 @@ jobs:
           ./gradlew build -x test
 
       - name: Generate Dockerfile (if Dockerfile case)
-        if: matrix.case != 'bootBuildImage'
         run: |
           cd military-recruit
           case="${{ matrix.case }}"
@@ -59,7 +58,8 @@ jobs:
           echo "COPY build/libs/*.jar /app/app.jar" >> Dockerfile
           echo "WORKDIR /app" >> Dockerfile
           echo "CMD [\"java\", \"-jar\", \"app.jar\"]" >> Dockerfile
-          FILTERED_NAME="/${{ matrix.case##*/ }}"
+          
+          FILTERED_NAME="/${case##*/}"
           echo "FILTERED_NAME=$FILTERED_NAME" >> $GITHUB_ENV
 
       - name: Build Docker image and save tar
