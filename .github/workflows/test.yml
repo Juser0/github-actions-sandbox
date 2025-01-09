@@ -1,76 +1,23 @@
-name: benchmark-java
-
-permissions:
-  contents: read
+name: Check Java Version
 
 on:
   push:
     branches:
-      - 'main'
+      - main
 
 jobs:
-  benchmark:
+  check-java:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        case:
-          - openjdk:17
-          - openjdk:17-jdk-slim
-          - openjdk:17-jdk-alpine
-          - eclipse-temurin:17
-          - eclipse-temurin:17-jdk-alpine
-          - eclipse-temurin:17-jre
-          - eclipse-temurin:17-jre-alpine
-          - amazoncorretto:17
-          - amazoncorretto:17-alpine
-          - bellsoft/liberica-openjdk-debian:17
-          - bellsoft/liberica-openjre-debian:17
-          - bellsoft/liberica-openjdk-alpine:17
-          - bellsoft/liberica-openjre-alpine:17
-
     steps:
-      - name: Checkout code
+      - name: Check Java Version
         run: |
-          git clone https://github.com/Juser0/military-recruit.git
-
-      - name: Get commit count
+          javac -version
+          java -version
+        
+      - name: List Installed Java Versions
         run: |
-          cd military-recruit
-          echo "count=$(git rev-list --all --count)" >> $GITHUB_ENV
+          sudo update-java-alternatives --list
 
-      - name: Grant execute permission for gradlew
-        run: |
-          cd military-recruit
-          chmod +x gradlew
+      - name: Check JAVA_HOME
+        run: echo $JAVA_HOME
 
-      - name: Build application
-        if: matrix.case != 'bootBuildImage'
-        run: |
-          cd military-recruit
-          ./gradlew build -x test
-
-      - name: Generate Dockerfile
-        run: |
-          cd military-recruit
-          case="${{ matrix.case }}"
-          echo "FROM $case" > Dockerfile
-          echo "COPY build/libs/*.jar /app/app.jar" >> Dockerfile
-          echo "WORKDIR /app" >> Dockerfile
-          echo "CMD [\"java\", \"-jar\", \"app.jar\"]" >> Dockerfile
-          
-          FILTERED_NAME="${case//\//-}"
-          FILTERED_NAME="${FILTERED_NAME//:/-}"
-          echo "FILTERED_NAME=$FILTERED_NAME" >> $GITHUB_ENV
-
-      - name: Build Docker image and save tar
-        run: |
-          cd military-recruit
-          docker build -t dockerfile:${{ env.count }} .
-          docker save dockerfile:${{ env.count }} -o dockerfiles.tar
-
-      - name: Upload Docker image artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.FILTERED_NAME }}
-          path: ./military-recruit/dockerfiles.tar
