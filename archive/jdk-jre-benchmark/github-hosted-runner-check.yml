@@ -20,4 +20,3 @@ jobs:
 
       - name: Check JAVA_HOME
         run: echo $JAVA_HOME
-
